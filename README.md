@@ -22,6 +22,9 @@
 
 ## Description
 
+This repository is a fork of the original project:
+- Original upstream: [tonineri/viya4-openldap](https://github.com/tonineri/viya4-openldap)
+
 Based on [bitnamilegacy/openldap](https://hub.docker.com/r/bitnamilegacy/openldap/tags?name=latest), this project automates the deployment and configuration of an OpenLDAP server tailored for SAS Viya 4, running in a Kubernetes environment. The setup includes custom schemas, ACLs, and integration with SAS applications, ensuring a ready-to-use LDAP service with necessary access controls and structure for SAS Viya.
 
 The tool supports unencrypted connection to port **1389** (LDAP) and encrypted connection to port **1636** (LDAPS).
@@ -186,6 +189,11 @@ For LDAP**S** (secure), copy the `viya4-openldap/certificates/sasldap_CA.crt` fi
 ## ACLs
 
 The provided ACLs ensure that the `sasbind` user has read access to all attributes, facilitating application bindings while maintaining security.
+
+## Additional Documentation
+
+- Operational guide: [GUIDE.md](GUIDE.md)
+- Incremental user/group management and migration tools: [generate-ldif-v2/README.md](generate-ldif-v2/README.md)
 
 ## Known Issues
 

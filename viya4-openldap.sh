@@ -46,6 +46,8 @@ mkdir -p -m 777 $TMPDIR
 TMPFILE="/tmp/$$$RANDOM"
 TMPERROR="/tmp/$$$RANDOM.err"
 VERBOSE=0
+DEPLOY_STRUCTURE=0
+
 
 # -----------------------------------------------  backBone  ---------------------------------------------
 
@@ -182,6 +184,11 @@ while [ "$#" -gt 0 ]; do
         exit 1
       fi
       ;;
+    --deploy-structure)
+      DEPLOY_STRUCTURE=1
+      echo -e "\n${INFOMSG} | SAS Viya-ready structure deployment enabled"
+      ;;
+
     -v|--verbose)
       VERBOSE=1
       echo -e "\n${INFOMSG} | Verbose mode enabled"
@@ -204,12 +211,12 @@ while [ "$#" -gt 0 ]; do
 done
 
 # options | Check if the required options are provided
+# options | Check if the required options are provided
 if [ -z "$NS" ]; then
-  echo -e "\n$INFOMSG | Usage:"
-  echo -e "$0 --namespace ${ITALIC}<desired-ldap-namespace-name>${NONE} [-v|--verbose]"
-  echo -e "$0 --version to see script version"
-  exit 1
+  echo -e "\n${WARNMSG} | Namespace not provided, using default: ${BYELLOW}sasldap${NONE}"
+  NS="sasldap"
 fi
+
 
 # ----------------------------------------------- introHeader --------------------------------------------
 
@@ -625,49 +632,40 @@ if [ "$OpenLDAPdeployed" = "YES" ]; then
   printDefaultTree
   sleep 0.5
   divider
+# Deploy SAS Viya-ready structure automatically if requested
+if [[ "$DEPLOY_STRUCTURE" -eq 1 ]]; then
+  echo -e "\n⮞  ${BYELLOW}Deploying SAS Viya-ready structure${NONE}\n"
 
-  # Prompt for deploying SAS Viya-ready structure
-  while true; do
-    echo -e "\nWould you like to deploy the ${CYAN}SAS Viya${NONE}-ready structure? [${BYELLOW}y${NONE}/${BYELLOW}n${NONE}]:"
-    read -r user_input
+  if execute \
+      --title "Deploying the ${CYAN}SAS Viya${NONE}-ready structure" \
+      deploySASViyaStructure \
+      --error "$ERRORMSG | Failed to deploy ${CYAN}SAS Viya${NONE}-ready structure."; then
 
-    if [[ "$user_input" =~ ^[Yy]$ ]]; then
-      echo ""
-      if execute \
-          --title "Deploying the ${CYAN}SAS Viya${NONE}-ready structure" \
-          deploySASViyaStructure \
-          --error "$ERRORMSG | Failed to deploy ${CYAN}SAS Viya${NONE}-ready structure."; then
-        echo ""
-        echo -e "\nThis is the new ${CYAN}OpenLDAP${NONE} structure:"
-        sleep 0.5
-        printSAStree
-        sleep 0.5
-        divider
-        sleep 0.5
-        printConnectionInfo
-        sleep 0.5
-        divider
-        sleep 0.5
-        printGoodbye
-      else
-        echo -e "$ERRORMSG | Failed to deploy ${CYAN}SAS Viya${NONE}-ready structure."
-        exit 1 # SAS Viya-ready structure failed to deploy
-      fi
-      break
-
-    elif [[ "$user_input" =~ ^[Nn]$ ]]; then
+      echo -e "\nThis is the new ${CYAN}OpenLDAP${NONE} structure:"
+      sleep 0.5
+      printSAStree
+      sleep 0.5
+      divider
       sleep 0.5
       printConnectionInfo
       sleep 0.5
       divider
-      sleep 0.5
       printGoodbye
-      break
+  else
+      echo -e "$ERRORMSG | Failed to deploy ${CYAN}SAS Viya${NONE}-ready structure."
+      exit 1
+  fi
 
-    else
-      echo -e "\n${ERRORMSG} | Accepted inputs: ${BYELLOW}y${NONE}/${BYELLOW}n${NONE}"
-    fi
-  done
+else
+  echo -e "\n${NOTEMSG} | SAS Viya structure deployment skipped (use --deploy-structure to enable)."
+  sleep 0.5
+  printConnectionInfo
+  sleep 0.5
+  divider
+  printGoodbye
+fi
+
+  
 else
   echo -e "\n${ERRORMSG} | ${CYAN}OpenLDAP${NONE} deployment failed.\n"
   exit 1
