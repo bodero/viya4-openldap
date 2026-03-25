@@ -2,24 +2,21 @@ uid_start: 7000
 gid_start: 6000
 
 users:
-  - uid: simone.abisso
-    givenName: Simone
-    sn: Abisso
-    mail: Simone.Abisso@it.ey.com
+  - uid: user.one
+    givenName: User
+    sn: One
+    mail: user.one@example.com
     # password: OptionalPlainTextPassword
     groups:
-      - ey-users
+      - project-users
 
-  - uid: bonaventura.derosa
-    givenName: Bonaventura
-    sn: De Rosa
-    mail: bonaventura.derosa@sas.com
+  - uid: user.two
+    givenName: User
+    sn: Two
+    mail: user.two@example.com
     groups:
-      - sas-users
+      - project-users
 
 groups:
-  - name: ey-users
-    members: []
-
-  - name: sas-users
+  - name: project-users
     members: []
