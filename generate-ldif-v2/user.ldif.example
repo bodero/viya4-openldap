@@ -1,0 +1,111 @@
+# user.ldif.example
+#
+# Esempi manuali di LDIF per update rapido di utenti e gruppi.
+#
+# Uso tipico:
+#   ldapmodify -x -H ldap://localhost:1389 \
+#     -D "cn=admin,dc=sasldap,dc=com" -w 'SAS@ldapAdm1n' \
+#     -f generate-ldif-v2/user.ldif
+#
+# Copiare questo file in:
+#   generate-ldif-v2/user.ldif
+# e poi modificare solo il blocco necessario.
+#
+# NOTA:
+# - usare UN SOLO blocco per volta, salvo casi espliciti
+# - user.ldif reale non va versionato
+
+# =====================================================================
+# 1) AGGIORNARE ATTRIBUTI UTENTE ESISTENTE
+# =====================================================================
+# Esempio: nome, cognome, mail, displayName, homeDirectory, shell
+# Decommentare e adattare.
+#
+# dn: uid=user.name,ou=users,dc=sasldap,dc=com
+# changetype: modify
+# replace: givenName
+# givenName: User
+# -
+# replace: sn
+# sn: Name
+# -
+# replace: displayName
+# displayName: User Name
+# -
+# replace: mail
+# mail: user.name@example.com
+# -
+# replace: homeDirectory
+# homeDirectory: /home/user.name
+# -
+# replace: loginShell
+# loginShell: /bin/bash
+
+# =====================================================================
+# 2) CAMBIO PASSWORD UTENTE ESISTENTE
+# =====================================================================
+# Generare prima un hash SSHA, ad esempio:
+#   slappasswd -s 'NuovaPassword123!'
+#
+# Incollare poi l'hash nel blocco sotto.
+#
+# dn: uid=user.name,ou=users,dc=sasldap,dc=com
+# changetype: modify
+# replace: userPassword
+# userPassword: {SSHA}REPLACE_WITH_GENERATED_HASH
+
+# =====================================================================
+# 3) AGGIUNGERE UTENTE ESISTENTE A UN GRUPPO ESISTENTE
+# =====================================================================
+# dn: cn=project-users,ou=groups,dc=sasldap,dc=com
+# changetype: modify
+# add: member
+# member: uid=user.name,ou=users,dc=sasldap,dc=com
+
+# =====================================================================
+# 4) RIMUOVERE UTENTE ESISTENTE DA UN GRUPPO ESISTENTE
+# =====================================================================
+# dn: cn=project-users,ou=groups,dc=sasldap,dc=com
+# changetype: modify
+# delete: member
+# member: uid=user.name,ou=users,dc=sasldap,dc=com
+
+# =====================================================================
+# 5) CREARE UN NUOVO GRUPPO CUSTOM
+# =====================================================================
+# groupOfNames richiede almeno un member.
+#
+# dn: cn=project-users,ou=groups,dc=sasldap,dc=com
+# objectClass: groupOfNames
+# objectClass: posixGroup
+# objectClass: top
+# gidNumber: 6500
+# cn: project-users
+# member: uid=user.name,ou=users,dc=sasldap,dc=com
+# o: SAS Institute
+
+# =====================================================================
+# 6) CREARE UN NUOVO UTENTE MANUALMENTE
+# =====================================================================
+# Generare prima l'hash password con:
+#   slappasswd -s 'TempPassword123!'
+#
+# dn: uid=user.name,ou=users,dc=sasldap,dc=com
+# objectClass: inetOrgPerson
+# objectClass: organizationalPerson
+# objectClass: person
+# objectClass: posixAccount
+# objectClass: top
+# uid: user.name
+# cn: user.name
+# givenName: User
+# sn: Name
+# displayName: User Name
+# mail: user.name@example.com
+# uidNumber: 7500
+# gidNumber: 7500
+# homeDirectory: /home/user.name
+# loginShell: /bin/bash
+# o: SAS Institute
+# l: Italy
+# userPassword: {SSHA}REPLACE_WITH_GENERATED_HASH

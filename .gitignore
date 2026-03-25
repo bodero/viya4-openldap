@@ -1,0 +1,21 @@
+# Local runtime/config files
+.env
+.env.local
+*.local
+
+# generate-ldif-v2 populated files / sensitive data
+generate-ldif-v2/.env
+generate-ldif-v2/directory.yaml
+generate-ldif-v2/directory.yaml_old
+generate-ldif-v2/user.ldif
+generate-ldif-v2/export-no-root.ldif
+generate-ldif-v2/generated/
+
+# Common ad-hoc exports / temp files
+*.ldif.tmp
+*.bak
+*.old
+*.orig
+
+assets/certificates/
+sasldap-deployment.yaml
